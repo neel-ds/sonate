@@ -123,7 +123,9 @@ export default function Form() {
                         id="twitterUrl"
                         value={twitterUrl}
                         onChange={(e) => {
-                          setTwitterUrl(e.target.value);
+                          setTwitterUrl(
+                            "https://twitter.com/" + e.target.value
+                          );
                         }}
                         placeholder="Enter your twitter handle"
                         className="w-full px-4 py-4 text-black placeholder-gray-500 transition-all duration-200 bg-white border border-gray-200 rounded-md focus:outline-none focus:border-orange-600 caret-orange-600"
