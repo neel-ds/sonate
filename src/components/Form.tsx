@@ -3,6 +3,13 @@ import { useState } from "react";
 
 export default function Form() {
   const [image, setImage] = useState("");
+  const [icon, setIcon] = useState("");
+  const [name, setName] = useState("");
+  const [userName, setUserName] = useState("");
+  const [bio, setBio] = useState("");
+  const [email, setEmail] = useState("");
+  const [cubikUrl, setCubikUrl] = useState("");
+  const [twitterUrl, setTwitterUrl] = useState("");
   return (
     <section className="py-10 bg-gray-900 sm:py-16 lg:py-24">
       <div className="px-4 mx-auto sm:px-6 lg:px-8 max-w-7xl">
@@ -38,6 +45,9 @@ export default function Form() {
                         name="image"
                         type="file"
                         accept={"image/*"}
+                        onChange={(e) => {
+                          // setImage(URL.createObjectURL(e.target.files[0]));
+                        }}
                         required
                       ></input>
                     </div>
@@ -52,9 +62,13 @@ export default function Form() {
                     <div className="mt-2.5 relative">
                       <input
                         type="text"
-                        name=""
-                        id=""
+                        name="name"
+                        id="name"
+                        value={name}
                         placeholder="Enter your full name"
+                        onChange={(e) => {
+                          setName(e.target.value);
+                        }}
                         className="w-full px-4 py-4 text-black placeholder-gray-500 transition-all duration-200 bg-white border border-gray-200 rounded-md focus:outline-none focus:border-orange-600 caret-orange-600"
                       />
                     </div>
@@ -67,8 +81,12 @@ export default function Form() {
                     <div className="mt-2.5 relative">
                       <input
                         type="email"
-                        name=""
-                        id=""
+                        name="email"
+                        id="email"
+                        value={email}
+                        onChange={(e) => {
+                          setEmail(e.target.value);
+                        }}
                         placeholder="javier@solana.com"
                         className="w-full px-4 py-4 text-black placeholder-gray-500 transition-all duration-200 bg-white border border-gray-200 rounded-md focus:outline-none focus:border-orange-600 caret-orange-600"
                       />
@@ -82,8 +100,12 @@ export default function Form() {
                     <div className="mt-2.5 relative">
                       <input
                         type="text"
-                        name=""
-                        id=""
+                        name="username"
+                        id="username"
+                        value={userName}
+                        onChange={(e) => {
+                          setUserName(e.target.value);
+                        }}
                         placeholder="Enter a short username"
                         className="w-full px-4 py-4 text-black placeholder-gray-500 transition-all duration-200 bg-white border border-gray-200 rounded-md focus:outline-none focus:border-orange-600 caret-orange-600"
                       />
@@ -97,8 +119,12 @@ export default function Form() {
                     <div className="mt-2.5 relative">
                       <input
                         type="text"
-                        name=""
-                        id=""
+                        name="twitterUrl"
+                        id="twitterUrl"
+                        value={twitterUrl}
+                        onChange={(e) => {
+                          setTwitterUrl(e.target.value);
+                        }}
                         placeholder="Enter your twitter handle"
                         className="w-full px-4 py-4 text-black placeholder-gray-500 transition-all duration-200 bg-white border border-gray-200 rounded-md focus:outline-none focus:border-orange-600 caret-orange-600"
                       />
@@ -110,10 +136,14 @@ export default function Form() {
                       Your cubik profile{" "}
                     </label>
                     <div className="mt-2.5 relative">
-                    <input
+                      <input
                         type="text"
-                        name=""
-                        id=""
+                        name="cubikUrl"
+                        id="cubikUrl"
+                        value={cubikUrl}
+                        onChange={(e) => {
+                          setCubikUrl(e.target.value);
+                        }}
                         placeholder="Enter your profile link"
                         className="w-full px-4 py-4 text-black placeholder-gray-500 transition-all duration-200 bg-white border border-gray-200 rounded-md focus:outline-none focus:border-orange-600 caret-orange-600"
                       />
@@ -126,8 +156,12 @@ export default function Form() {
                     </label>
                     <div className="mt-2.5 relative">
                       <textarea
-                        name=""
-                        id=""
+                        name="bio"
+                        id="bio"
+                        value={bio}
+                        onChange={(e) => {
+                          setBio(e.target.value);
+                        }}
                         placeholder="Be unique, short and pitch yourself"
                         className="w-full px-4 py-2 text-black placeholder-gray-500 transition-all duration-200 bg-white border border-gray-200 rounded-md resize-y focus:outline-none focus:border-orange-600 caret-orange-600"
                         rows={4}
@@ -137,6 +171,7 @@ export default function Form() {
                   <div className="sm:col-span-2">
                     <button
                       type="submit"
+                      onClick={() => {}}
                       className="inline-flex items-center justify-center w-full px-4 py-4 mt-2 text-base font-semibold text-white transition-all duration-200 bg-orange-600 border border-transparent rounded-md focus:outline-none hover:bg-orange-700 focus:bg-orange-700"
                     >
                       Create
