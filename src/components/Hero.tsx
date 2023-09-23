@@ -151,7 +151,7 @@ export default function Hero() {
                 <div className="sm:flex items-center">
                   <a
                     className="relative group inline-block w-full sm:w-auto py-4 px-6 text-white font-semibold bg-orange-600 rounded-md overflow-hidden"
-                    href="#"
+                    href="/create"
                   >
                     <div className="absolute top-0 right-full w-full h-full bg-gray-900 transform group-hover:translate-x-full group-hover:scale-102 transition duration-500"></div>
                     <div className="relative flex items-center justify-center">
