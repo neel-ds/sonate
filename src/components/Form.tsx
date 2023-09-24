@@ -1,5 +1,6 @@
 import Image from "next/image";
 import { useEffect, useState } from "react";
+// @ts-ignore
 import {Web3Storage} from "web3.storage";
 import router, { useRouter } from "next/router";
 import { useAnchorWallet, useConnection } from "@solana/wallet-adapter-react";
