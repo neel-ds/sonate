@@ -31,12 +31,12 @@ const Card = () => {
       <div className="flex flex-col items-center mt-2 space-y-2">
         <Image
           className="rounded-xl shadow-lg"
-          src={"/pfp_2.png"}
+          src={"/madlads.png"}
           width={250}
           height={250}
           alt="nft"
         />
-        <p className="text-lg font-medium">Faceless PFP</p>
+        <p className="text-lg font-medium">Fock It.</p>
       </div>
     </Link>
   );
@@ -58,7 +58,11 @@ export default function User({ parsedData }: { parsedData: UserAccount }) {
     Web3.PublicKey | undefined
   >(undefined);
 
-  const [tags, setTags] = useState<string[]>(["superteam member", "madlads", "nft degen"]);
+  const [tags, setTags] = useState<string[]>([
+    "superteam member",
+    "madlads",
+    "nft degen",
+  ]);
 
   const getTags = async () => {
     const data = await fetch(`/api/getNFTtags?address=${parsedData.address}`, {
@@ -66,7 +70,14 @@ export default function User({ parsedData }: { parsedData: UserAccount }) {
     });
     const tag = await data.json();
     console.log("tag", tag);
-    // setTags(tag);
+  };
+
+  const getTopNFTs = async () => {
+    const data = await fetch(`/api/getTopNFTs?address=${parsedData.address}`, {
+      method: "GET",
+    });
+    const tag = await data.json();
+    console.log("nfts", tag);
   };
 
   useEffect(() => {
@@ -81,6 +92,7 @@ export default function User({ parsedData }: { parsedData: UserAccount }) {
       setGithubUrl(`https://${parsedData.githubUrl}`);
       setCreatorsAddress(parsedData.address);
       getTags();
+      getTopNFTs();
     } catch (error) {
       console.error(error);
     }
@@ -99,24 +111,27 @@ export default function User({ parsedData }: { parsedData: UserAccount }) {
   };
 
   const sendSol = async () => {
-    
-    if (!connection || !publicKey || !creatorsAddress) {
-      return;
-    }
-   
-    const transaction = new Web3.Transaction();
-    transaction.add(
-      Web3.SystemProgram.transfer({
-        fromPubkey: publicKey,
-        toPubkey: new Web3.PublicKey(creatorsAddress),
-        lamports: amount * Web3.LAMPORTS_PER_SOL,
-      })
-    );
-    const latestBlockhash = await connection.getLatestBlockhash();
-    transaction.lastValidBlockHeight = latestBlockhash.lastValidBlockHeight;
-    transaction.recentBlockhash = latestBlockhash.blockhash;
+    try {
+      if (!connection || !publicKey || !creatorsAddress) {
+        return;
+      }
 
-    sendTransaction(transaction, connection).then((sig) => {});
+      const transaction = new Web3.Transaction();
+      transaction.add(
+        Web3.SystemProgram.transfer({
+          fromPubkey: publicKey,
+          toPubkey: new Web3.PublicKey(creatorsAddress),
+          lamports: amount * Web3.LAMPORTS_PER_SOL,
+        })
+      );
+      const latestBlockhash = await connection.getLatestBlockhash();
+      transaction.lastValidBlockHeight = latestBlockhash.lastValidBlockHeight;
+      transaction.recentBlockhash = latestBlockhash.blockhash;
+
+      sendTransaction(transaction, connection).then((sig) => {});
+    } catch {
+      console.error("error");
+    }
   };
 
   return (
@@ -234,9 +249,9 @@ export default function User({ parsedData }: { parsedData: UserAccount }) {
                           Number which can make em happy
                         </label>
                         <input
-                        onChange={(e)=>{
-                          setAmount(parseInt(e.target.value));
-                        }}
+                          onChange={(e) => {
+                            setAmount(parseInt(e.target.value));
+                          }}
                           type="number"
                           name="amount"
                           id="amount"
@@ -246,10 +261,10 @@ export default function User({ parsedData }: { parsedData: UserAccount }) {
                         />
                       </div>
                       <button
-                      onClick={(e)=>{
-e.preventDefault();
-                        sendSol();
-                      }}
+                        onClick={(e) => {
+                          e.preventDefault();
+                          sendSol();
+                        }}
                         type="submit"
                         className="w-full text-white bg-orange-600 focus:ring-1 focus:outline-none focus:ring-orange-600 font-medium rounded-lg text-sm px-5 py-2.5 text-center"
                       >
@@ -267,9 +282,6 @@ e.preventDefault();
             Your top collection
           </p>
           <div className="flex flex-row flex-wrap items-center justify-between bg-[#F8F7FF]">
-            <Card />
-            <Card />
-            <Card />
             <Card />
           </div>
         </div>
