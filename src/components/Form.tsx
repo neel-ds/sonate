@@ -28,7 +28,7 @@ export default function Form() {
     e.preventDefault();
     const files = (e.target as HTMLInputElement).files!;
     // if (process.env.ACCESS_TOKEN != null) {
-      const client = new Web3Storage({ token: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJkaWQ6ZXRocjoweDkxZTRjOEMwNTJiMzkzNEQ3Nzc5NWM3QWQ3MkQ0MTFhMGQyMWUxODIiLCJpc3MiOiJ3ZWIzLXN0b3JhZ2UiLCJpYXQiOjE2NzA1MTU2ODQzOTMsIm5hbWUiOiJidXktbWUtYS1jYW5keSJ9.Vf4XwrxWzbZSFIDNu2zvH_MTVsP_9LSm0AXwPNKMduI" });
+      const client = new Web3Storage({ token: process.env.NEXT_PUBLIC_ACCESS_TOKEN });
       client.put(files).then((cid:String) => {
         console.log(cid);
         setIcon(`https://${cid}.ipfs.w3s.link/${files[0].name}`);
@@ -55,7 +55,7 @@ export default function Form() {
 
 
     if (process.env.ACCESS_TOKEN != null) {
-      const client = new Web3Storage({ token: process.env.ACCESS_TOKEN });
+      const client = new Web3Storage({ token: process.env.NEXT_PUBLIC_ACCESS_TOKEN });
       client
         .put([new File([JSON.stringify(profile)], `${userName}.json`)])
         .then(async (cid: string) => {
