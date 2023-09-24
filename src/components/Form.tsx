@@ -11,7 +11,7 @@ import { getProgram, getUserAccountPk } from "../utils/program";
 
 
 export default function Form() {
-  const [image, setImage] = useState("");
+  const [image, setImage] = useState();
   const [icon, setIcon] = useState("");
   const [name, setName] = useState("");
   const [userName, setUserName] = useState("");
@@ -104,7 +104,9 @@ export default function Form() {
                   <div className="flex flex-row items-center space-x-2">
                     <Image
                       className="mx-auto rounded-xl border border-orange-600"
-                      src={image !== "" ? image : "/profile.png"}
+                      src={icon !== "" ? icon : "/profile.png"}
+                      loader={({ src }) => src
+                      }
                       alt="profile"
                       width={150}
                       height={150}
@@ -118,6 +120,7 @@ export default function Form() {
                         id="image"
                         name="image"
                         type="file"
+                        
                         accept={"image/*"}
                         onChange={(
                           e: React.ChangeEvent<HTMLInputElement>
