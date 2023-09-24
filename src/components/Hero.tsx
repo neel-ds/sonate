@@ -58,17 +58,7 @@ export default function Hero() {
               </li>
             </ul>
             <div className="hidden lg:block ml-auto">
-            <WalletMultiButtonDynamic />
-              {/* <div className="flex items-center">
-                <a
-                  className="relative group inline-block py-3 px-4 text-sm font-semibold text-orange-600 hover:text-white border border-gray-300 rounded-md overflow-hidden transition duration-300"
-                  href="#"
-                >
-                  <div className="absolute top-0 right-full w-full h-full bg-orange-600 transform group-hover:translate-x-full group-hover:scale-102 transition duration-500"></div>
-                
-                  <span className="relative">  <WalletMultiButtonDynamic /></span>
-                </a>
-              </div> */}
+              <WalletMultiButtonDynamic />
             </div>
           </div>
         </div>
