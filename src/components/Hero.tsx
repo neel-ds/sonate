@@ -1,6 +1,17 @@
+import dynamic from "next/dynamic";
 import Image from "next/image";
+import { useRouter } from "next/router";
 
 export default function Hero() {
+  require("@solana/wallet-adapter-react-ui/styles.css");
+
+  const WalletMultiButtonDynamic = dynamic(
+      async () =>
+          (await import("@solana/wallet-adapter-react-ui")).WalletMultiButton,
+      { ssr: false }
+  );
+
+  const router = useRouter();
   return (
     <div className="relative pb-12 overflow-hidden">
       <Image
@@ -47,15 +58,17 @@ export default function Hero() {
               </li>
             </ul>
             <div className="hidden lg:block ml-auto">
-              <div className="flex items-center">
+            <WalletMultiButtonDynamic />
+              {/* <div className="flex items-center">
                 <a
                   className="relative group inline-block py-3 px-4 text-sm font-semibold text-orange-600 hover:text-white border border-gray-300 rounded-md overflow-hidden transition duration-300"
                   href="#"
                 >
                   <div className="absolute top-0 right-full w-full h-full bg-orange-600 transform group-hover:translate-x-full group-hover:scale-102 transition duration-500"></div>
-                  <span className="relative">Connect Wallet</span>
+                
+                  <span className="relative">  <WalletMultiButtonDynamic /></span>
                 </a>
-              </div>
+              </div> */}
             </div>
           </div>
         </div>
