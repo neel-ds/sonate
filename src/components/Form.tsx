@@ -12,13 +12,12 @@ import { getProgram, getUserAccountPk } from "../utils/program";
 
 
 export default function Form() {
-  const [image, setImage] = useState();
   const [icon, setIcon] = useState("");
   const [name, setName] = useState("");
   const [userName, setUserName] = useState("");
   const [bio, setBio] = useState("");
   const [email, setEmail] = useState("");
-  const [cubikUrl, setCubikUrl] = useState("");
+  const [solarplex, setSolarPlex] = useState("");
   const [twitterUrl, setTwitterUrl] = useState("");
   const [linkedinUrl, setLinkedinUrl] = useState("");
   const [githubUrl, setGithubUrl] = useState("");
@@ -28,16 +27,16 @@ export default function Form() {
   const uploadImage = (e: React.ChangeEvent<HTMLInputElement>) => {
     e.preventDefault();
     const files = (e.target as HTMLInputElement).files!;
-    // if (process.env.ACCESS_TOKEN != null) {
+    if (process.env.NEXT_PUBLIC_ACCESS_TOKEN != null) {
       const client = new Web3Storage({ token: process.env.NEXT_PUBLIC_ACCESS_TOKEN });
       client.put(files).then((cid:String) => {
         console.log(cid);
         setIcon(`https://${cid}.ipfs.w3s.link/${files[0].name}`);
         console.log(`https://${cid}.ipfs.w3s.link/${files[0].name}`)
       });
-    // } else {
-    //   console.log("No access token");
-    // }
+    } else {
+      console.log("No access token");
+    }
   };
 
   const send = async () => {
@@ -55,7 +54,7 @@ export default function Form() {
 
 
 
-    if (process.env.ACCESS_TOKEN != null) {
+    if (process.env.NEXT_PUBLIC_ACCESS_TOKEN != null) {
       const client = new Web3Storage({ token: process.env.NEXT_PUBLIC_ACCESS_TOKEN });
       client
         .put([new File([JSON.stringify(profile)], `${userName}.json`)])
@@ -213,16 +212,16 @@ export default function Form() {
                   <div className="sm:col-span-2">
                     <label className="text-base font-medium text-gray-900">
                       {" "}
-                      Your cubik profile{" "}
+                      Your Solar Plex profile{" "}
                     </label>
                     <div className="mt-2.5 relative">
                       <input
                         type="text"
                         name="cubikUrl"
                         id="cubikUrl"
-                        value={cubikUrl}
+                        value={solarplex}
                         onChange={(e) => {
-                          setCubikUrl(e.target.value);
+                          setSolarPlex(e.target.value);
                         }}
                         placeholder="Enter your profile link"
                         className="w-full px-4 py-4 text-black placeholder-gray-500 transition-all duration-200 bg-white border border-gray-200 rounded-md focus:outline-none focus:border-orange-600 caret-orange-600"
@@ -251,7 +250,8 @@ export default function Form() {
                   <div className="sm:col-span-2">
                     <button
                       type="submit"
-                      onClick={() => {
+                      onClick={(e) => {
+                        e.preventDefault();
                         send();
                       }}
                       className="inline-flex items-center justify-center w-full px-4 py-4 mt-2 text-base font-semibold text-white transition-all duration-200 bg-orange-600 border border-transparent rounded-md focus:outline-none hover:bg-orange-700 focus:bg-orange-700"
