@@ -1,15 +1,12 @@
 import Image from "next/image";
 import { useEffect, useState } from "react";
 // @ts-ignore
-import {Web3Storage} from "web3.storage";
+import { Web3Storage } from "web3.storage";
 import router, { useRouter } from "next/router";
 import { useAnchorWallet, useConnection } from "@solana/wallet-adapter-react";
-import { PublicKey } from "@solana/web3.js";
-import {
-  Program,
-} from "@project-serum/anchor";
+import { Connection, PublicKey, clusterApiUrl } from "@solana/web3.js";
+import { Program } from "@project-serum/anchor";
 import { getProgram, getUserAccountPk } from "../utils/program";
-
 
 export default function Form() {
   const [icon, setIcon] = useState("");
@@ -19,10 +16,23 @@ export default function Form() {
   const [email, setEmail] = useState("");
   const [solarplex, setSolarPlex] = useState("");
   const [twitterUrl, setTwitterUrl] = useState("");
-  const [linkedinUrl, setLinkedinUrl] = useState("");
   const [githubUrl, setGithubUrl] = useState("");
   const [program, setProgram] = useState<Program | undefined>();
   const [userPDA, setUserPDA] = useState<PublicKey | undefined>(undefined);
+
+  const { connection } = useConnection();
+  const wallet = useAnchorWallet();
+
+  useEffect(() => {
+    console.log("wallet", wallet);
+    if (wallet) {
+      setProgram(getProgram(connection, wallet));
+    }
+  }, [wallet]);
+
+  useEffect(() => {
+    setUserPDA(getUserAccountPk(userName));
+  }, [userName]);
 
   const uploadImage = (e: React.ChangeEvent<HTMLInputElement>) => {
     e.preventDefault();
@@ -38,18 +48,6 @@ export default function Form() {
       console.log("No access token");
     }
   };
-  const { connection } = useConnection();
-  const wallet = useAnchorWallet();
-
-  useEffect(() => {
-    if (wallet) {
-      setProgram(getProgram(connection, wallet));
-    }
-  }, [wallet]);
-
-  useEffect(() => {
-    setUserPDA(getUserAccountPk(userName));;
-}, [userName]);
 
   const send = async () => {
     const profile = {
@@ -58,34 +56,49 @@ export default function Form() {
       name: name,
       bio: bio,
       email: email,
-      linkedinUrl: linkedinUrl,
+      solarplexUrl: solarplex,
       twitterUrl: twitterUrl,
       githubUrl: githubUrl,
-      address: wallet?.publicKey
+      address: wallet?.publicKey,
     };
+
     if (process.env.NEXT_PUBLIC_ACCESS_TOKEN != null) {
       const client = new Web3Storage({ token: process.env.NEXT_PUBLIC_ACCESS_TOKEN });
       client
         .put([new File([JSON.stringify(profile)], `${userName}.json`)])
-        .then(async (cid: string) => {
-          const transaction = await (program as any).methods
-            .createUser(userName, cid)
-            .accounts({
-              userAccount: userPDA,
-              authority: wallet!.publicKey,
-            })
-            .rpc();
-          connection.confirmTransaction(transaction).then(() => {
-          
-          });
-          router.push(`/${userName}`)
+        .then(async (cid: any) => {
+          try {
+            const connection = new Connection(
+              clusterApiUrl("devnet"),
+              "confirmed"
+            );
+            const latestBlockHash = await connection.getLatestBlockhash();
+            console.log("program", program);
+            const transaction = await (program as Program).methods
+              .createUser(userName, cid)
+              .accounts({
+                userAccount: userPDA,
+                authority: wallet!.publicKey,
+              })
+              .rpc();
+            connection
+              .confirmTransaction({
+                blockhash: latestBlockHash.blockhash,
+                lastValidBlockHeight: latestBlockHash.lastValidBlockHeight,
+                signature: transaction,
+              })
+              .then(() => {
+                router.push(`/${userName}`);
+              });
+          } catch (error) {
+            console.log("Error", error);
+          }
         });
     } else {
       console.log("No access token");
     }
   };
 
- 
   return (
     <section className="py-10 bg-gray-900 sm:py-16 lg:py-24">
       <div className="px-4 mx-auto sm:px-6 lg:px-8 max-w-7xl">
@@ -107,8 +120,7 @@ export default function Form() {
                     <Image
                       className="mx-auto rounded-xl border border-orange-600"
                       src={icon !== "" ? icon : "/profile.png"}
-                      loader={({ src }) => src
-                      }
+                      loader={({ src }) => src}
                       alt="profile"
                       width={150}
                       height={150}
@@ -122,11 +134,10 @@ export default function Form() {
                         id="image"
                         name="image"
                         type="file"
-                        
                         accept={"image/*"}
-                        onChange={(
-                          e: React.ChangeEvent<HTMLInputElement>
-                        ) => uploadImage(e)}
+                        onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
+                          uploadImage(e)
+                        }
                         required
                       ></input>
                     </div>
@@ -190,46 +201,66 @@ export default function Form() {
                       />
                     </div>
                   </div>
+
                   <div>
                     <label className="text-base font-medium text-gray-900">
                       {" "}
-                      Twitter handle{" "}
+                      Twitter Handle{" "}
                     </label>
                     <div className="mt-2.5 relative">
                       <input
                         type="text"
-                        name="twitterUrl"
-                        id="twitterUrl"
+                        name="username"
+                        id="username"
                         value={twitterUrl}
                         onChange={(e) => {
-                          setTwitterUrl(
-                            "https://twitter.com/" + e.target.value
-                          );
+                          setTwitterUrl(e.target.value);
                         }}
                         placeholder="Enter your twitter handle"
                         className="w-full px-4 py-4 text-black placeholder-gray-500 transition-all duration-200 bg-white border border-gray-200 rounded-md focus:outline-none focus:border-orange-600 caret-orange-600"
                       />
                     </div>
                   </div>
-                  <div className="sm:col-span-2">
+
+                  <div>
                     <label className="text-base font-medium text-gray-900">
                       {" "}
-                      Your Solar Plex profile{" "}
+                      Solarplex Handle{" "}
                     </label>
                     <div className="mt-2.5 relative">
                       <input
                         type="text"
-                        name="cubikUrl"
-                        id="cubikUrl"
+                        name="Solarplex"
+                        id="Solarplex"
                         value={solarplex}
                         onChange={(e) => {
                           setSolarPlex(e.target.value);
                         }}
-                        placeholder="Enter your profile link"
+                        placeholder="Enter your solarplex handle"
                         className="w-full px-4 py-4 text-black placeholder-gray-500 transition-all duration-200 bg-white border border-gray-200 rounded-md focus:outline-none focus:border-orange-600 caret-orange-600"
                       />
                     </div>
                   </div>
+
+                  <div>
+                    <label className="text-base font-medium text-gray-900">
+                      GitHub Profile{" "}
+                    </label>
+                    <div className="mt-2.5 relative">
+                      <input
+                        type="text"
+                        name="githubUrl"
+                        id="githubUrl"
+                        value={githubUrl}
+                        onChange={(e) => {
+                          setGithubUrl(e.target.value);
+                        }}
+                        placeholder="Enter your GitHub handle"
+                        className="w-full px-4 py-4 text-black placeholder-gray-500 transition-all duration-200 bg-white border border-gray-200 rounded-md focus:outline-none focus:border-orange-600 caret-orange-600"
+                      />
+                    </div>
+                  </div>
+
                   <div className="sm:col-span-2">
                     <label className="text-base font-medium text-gray-900">
                       {" "}
@@ -252,7 +283,7 @@ export default function Form() {
                   <div className="sm:col-span-2">
                     <button
                       type="submit"
-                      onClick={(e) => {
+                      onClick={(e: any) => {
                         e.preventDefault();
                         send();
                       }}

@@ -1,5 +1,5 @@
 import { AnchorProvider, Program } from "@project-serum/anchor";
-import { Connection, Keypair, PublicKey } from "@solana/web3.js";
+import { Connection, PublicKey } from "@solana/web3.js";
 import { programId } from "./constants";
 
 export const getProgram = (connection: Connection, wallet: any) => {
