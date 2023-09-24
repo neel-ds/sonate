@@ -94,6 +94,7 @@ export default function User({ parsedData }: {  parsedData: UserAccount  }) {
 
 
   useEffect(() => {
+    console.log(parsedData);
     try {
       setIcon(parsedData.profileImage);
       setName(parsedData.name);
@@ -111,6 +112,7 @@ export default function User({ parsedData }: {  parsedData: UserAccount  }) {
   const [txSig, setTxSig] = useState("");
   const { connection } = useConnection();
   const { publicKey, sendTransaction } = useWallet();
+  const [amount, setAmount] = useState(0);
 
   const link = () => {
     return txSig
@@ -118,17 +120,18 @@ export default function User({ parsedData }: {  parsedData: UserAccount  }) {
       : "";
   };
 
-  const sendSol = async (event: React.ChangeEvent<HTMLFormElement>) => {
-    event.preventDefault();
+  const sendSol = async () => {
+    
     if (!connection || !publicKey || !creatorsAddress) {
       return;
     }
+   
     const transaction = new Web3.Transaction();
     transaction.add(
       Web3.SystemProgram.transfer({
         fromPubkey: publicKey,
         toPubkey: new Web3.PublicKey(creatorsAddress),
-        lamports: event.target.amount.value * Web3.LAMPORTS_PER_SOL,
+        lamports: amount * Web3.LAMPORTS_PER_SOL,
       })
     );
     const latestBlockhash = await connection.getLatestBlockhash();
@@ -139,6 +142,7 @@ export default function User({ parsedData }: {  parsedData: UserAccount  }) {
      
     });
   };
+
 
 
   return (
@@ -257,6 +261,9 @@ export default function User({ parsedData }: {  parsedData: UserAccount  }) {
                           Number which can make em happy
                         </label>
                         <input
+                        onChange={(e)=>{
+                          setAmount(parseInt(e.target.value));
+                        }}
                           type="number"
                           name="amount"
                           id="amount"
@@ -266,6 +273,10 @@ export default function User({ parsedData }: {  parsedData: UserAccount  }) {
                         />
                       </div>
                       <button
+                      onClick={(e)=>{
+e.preventDefault();
+                        sendSol();
+                      }}
                         type="submit"
                         className="w-full text-white bg-orange-600 focus:ring-1 focus:outline-none focus:ring-orange-600 font-medium rounded-lg text-sm px-5 py-2.5 text-center"
                       >
