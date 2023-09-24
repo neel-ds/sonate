@@ -1,10 +1,55 @@
 import Head from "next/head";
 import Image from "next/image";
 import Link from "next/link";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { BsTwitter } from "react-icons/bs";
 import { FiMail } from "react-icons/fi";
 import Header from "./Header";
+import * as Web3 from "@solana/web3.js";
+import { getProgram, getUserAccountPk } from "@/utils/program";
+import { useRouter } from "next/router";
+import { useConnection, useWallet } from "@solana/wallet-adapter-react";
+
+
+interface UserAccount {
+  profileImage: string;
+  userName: string;
+  name: string;
+  bio: string;
+  email: string;
+  linkedinUrl: string;
+  githubUrl: string;
+  twitterUrl: string;
+  address: Web3.PublicKey;
+}
+
+export const getServerSideProps = async (context: any) => {
+  const username = context.query.username;
+
+  const wallet = Web3.Keypair.generate();
+  const connection = new Web3.Connection(
+    "https://api.devnet.solana.com",
+    "confirmed"
+  );
+
+  try {
+    const program = getProgram(connection, wallet);
+    const userData = await program.account.userAccount.fetch(getUserAccountPk(username));
+    const link = `https://${(userData as any).cid}.ipfs.w3s.link/${username}.json`;
+    const response = await fetch(link);
+    const parsedData: UserAccount = await response.json();
+
+    return {
+      props: {
+        parsedData,
+      },
+    };
+  } catch (error) {
+    return {
+      notFound: true,
+    };
+  }
+};
 
 const Card = () => {
   return (
@@ -26,14 +71,76 @@ const Card = () => {
   );
 };
 
-export default function User({ username }: { username: string }) {
+export default function User({ parsedData }: {  parsedData: UserAccount  }) {
+  const router = useRouter();
+  const { username } = router.query;
   const [name, setName] = useState("");
   const [bio, setBio] = useState("");
+  const [icon, setIcon] = useState("");
+  const [linkedinUrl, setLinkedinUrl] = useState("");
+  const [githubUrl, setGithubUrl] = useState("");
+  const [twitterUrl, setTwitterUrl] = useState("");
+
   const [avatar, setAvatar] = useState("");
   const [twitter, setTwitter] = useState("");
   const [email, setEmail] = useState("");
   const [modal, setModal] = useState(false);
+  const [creatorsAddress, setCreatorsAddress] = useState<
+  Web3.PublicKey | undefined
+>(undefined);
   const tags = ["superteam member", "chad dev", "airdrop hunter"];
+
+
+
+
+  useEffect(() => {
+    try {
+      setIcon(parsedData.profileImage);
+      setName(parsedData.name);
+      setBio(parsedData.bio);
+      setEmail(parsedData.email);
+      setLinkedinUrl(`https://${parsedData.linkedinUrl}`);
+      setTwitterUrl(`https://${parsedData.twitterUrl}`);
+      setGithubUrl(`https://${parsedData.githubUrl}`);
+      setCreatorsAddress(parsedData.address);
+    } catch (error) {
+      console.error(error);
+    }
+  }, [parsedData]);
+
+  const [txSig, setTxSig] = useState("");
+  const { connection } = useConnection();
+  const { publicKey, sendTransaction } = useWallet();
+
+  const link = () => {
+    return txSig
+      ? `https://explorer.solana.com/tx/${txSig}?cluster=devnet`
+      : "";
+  };
+
+  const sendSol = async (event: React.ChangeEvent<HTMLFormElement>) => {
+    event.preventDefault();
+    if (!connection || !publicKey || !creatorsAddress) {
+      return;
+    }
+    const transaction = new Web3.Transaction();
+    transaction.add(
+      Web3.SystemProgram.transfer({
+        fromPubkey: publicKey,
+        toPubkey: new Web3.PublicKey(creatorsAddress),
+        lamports: event.target.amount.value * Web3.LAMPORTS_PER_SOL,
+      })
+    );
+    const latestBlockhash = await connection.getLatestBlockhash();
+    transaction.lastValidBlockHeight = latestBlockhash.lastValidBlockHeight;
+    transaction.recentBlockhash = latestBlockhash.blockhash;
+
+    sendTransaction(transaction, connection).then((sig) => {
+     
+    });
+  };
+
+
   return (
     <>
       <Head>
@@ -54,9 +161,9 @@ export default function User({ username }: { username: string }) {
             className="flex sm:mr-3 justify-center mb-5 sm:mb-0 rounded-full"
           />
           <span className="flex flex-col text-center sm:text-left text-2xl font-semibold whitespace-nowrap">
-            <p className="font-bold text-5xl mb-1">Neel Patel</p>
+            <p className="font-bold text-5xl mb-1">{name}</p>
             <p className="text-gray-700 font-medium text-xl mb-4">
-              Building @sonate 🚀
+              {bio}
             </p>
             <div className="flex flex-row justify-center sm:justify-start space-x-2">
               <Link

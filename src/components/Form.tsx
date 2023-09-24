@@ -38,6 +38,18 @@ export default function Form() {
       console.log("No access token");
     }
   };
+  const { connection } = useConnection();
+  const wallet = useAnchorWallet();
+
+  useEffect(() => {
+    if (wallet) {
+      setProgram(getProgram(connection, wallet));
+    }
+  }, [wallet]);
+
+  useEffect(() => {
+    setUserPDA(getUserAccountPk(userName));;
+}, [userName]);
 
   const send = async () => {
     const profile = {
@@ -51,9 +63,6 @@ export default function Form() {
       githubUrl: githubUrl,
       address: wallet?.publicKey
     };
-
-
-
     if (process.env.NEXT_PUBLIC_ACCESS_TOKEN != null) {
       const client = new Web3Storage({ token: process.env.NEXT_PUBLIC_ACCESS_TOKEN });
       client
@@ -76,14 +85,7 @@ export default function Form() {
     }
   };
 
-  const { connection } = useConnection();
-  const wallet = useAnchorWallet();
-
-  useEffect(() => {
-    if (wallet) {
-      setProgram(getProgram(connection, wallet));
-    }
-  }, [wallet]);
+ 
   return (
     <section className="py-10 bg-gray-900 sm:py-16 lg:py-24">
       <div className="px-4 mx-auto sm:px-6 lg:px-8 max-w-7xl">
