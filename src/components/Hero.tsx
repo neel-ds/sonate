@@ -1,5 +1,6 @@
 import dynamic from "next/dynamic";
 import Image from "next/image";
+import Link from "next/link"
 import { useRouter } from "next/router";
 
 export default function Hero() {
@@ -152,7 +153,7 @@ export default function Hero() {
                   </div>
                 </div>
                 <div className="sm:flex items-center">
-                  <a
+                  <Link
                     className="relative group inline-block w-full sm:w-auto py-4 px-6 text-white font-semibold bg-orange-600 rounded-md overflow-hidden"
                     href="/create"
                   >
@@ -174,7 +175,7 @@ export default function Hero() {
                         </svg>
                       </span>
                     </div>
-                  </a>
+                  </Link>
                   <div className="flex mt-8 sm:mt-0 sm:ml-8 items-center">
                     <Image
                       className="w-12 h-12 rounded-full"
