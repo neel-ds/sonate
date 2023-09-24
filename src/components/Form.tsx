@@ -27,16 +27,16 @@ export default function Form() {
   const uploadImage = (e: React.ChangeEvent<HTMLInputElement>) => {
     e.preventDefault();
     const files = (e.target as HTMLInputElement).files!;
-    if (process.env.ACCESS_TOKEN != null) {
-      const client = new Web3Storage({ token: process.env.ACCESS_TOKEN });
+    // if (process.env.ACCESS_TOKEN != null) {
+      const client = new Web3Storage({ token: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJkaWQ6ZXRocjoweDkxZTRjOEMwNTJiMzkzNEQ3Nzc5NWM3QWQ3MkQ0MTFhMGQyMWUxODIiLCJpc3MiOiJ3ZWIzLXN0b3JhZ2UiLCJpYXQiOjE2NzA1MTU2ODQzOTMsIm5hbWUiOiJidXktbWUtYS1jYW5keSJ9.Vf4XwrxWzbZSFIDNu2zvH_MTVsP_9LSm0AXwPNKMduI" });
       client.put(files).then((cid:String) => {
         console.log(cid);
         setIcon(`https://${cid}.ipfs.w3s.link/${files[0].name}`);
         console.log(`https://${cid}.ipfs.w3s.link/${files[0].name}`)
       });
-    } else {
-      console.log("No access token");
-    }
+    // } else {
+    //   console.log("No access token");
+    // }
   };
 
   const send = async () => {
