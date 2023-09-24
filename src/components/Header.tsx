@@ -36,7 +36,7 @@ export default function Header() {
             </Link>
             <ul className="hidden lg:flex ml-2 lg:w-auto lg:space-x-14 items-center">
               <li>
-                <p className="inline-block text-lg text-white hover:text-orange-500 font-semibold">
+                <p className="inline-block text-lg text-orange-500 font-semibold">
                   sonate
                 </p>
               </li>

@@ -44,7 +44,7 @@ export default function User({ username }: { username: string }) {
       </Head>
       <main className="min-h-[100vh] max-w-full bg-[#F8F7FF]">
         <Header />
-        <div className="flex flex-col sm:flex-row items-center p-8 py-12 px-2 justify-center bg-[#fefefe] sm:space-x-10 rounded border-t-[1px] border-gray-300">
+        <div className="flex flex-col sm:flex-row items-center p-8 pt-20 px-2 justify-center bg-[#fefefe] sm:space-x-10 rounded border-t-[1px] border-gray-300">
           <Image
             // loader={() => avatar}
             src={"/pfp_1.png"}
@@ -83,7 +83,7 @@ export default function User({ username }: { username: string }) {
                 />
               </Link>
             </div>
-            <div className="flex flex-row mt-2 space-x-1">
+            <div className="flex flex-col md:flex-row items-center justify-center mt-2 space-y-1 md:space-x-1">
               {tags.map((tag: string, index: any) => (
                 <p
                   key={index}
@@ -93,17 +93,19 @@ export default function User({ username }: { username: string }) {
                 </p>
               ))}
             </div>
-            <button
-              data-modal-target="authentication-modal"
-              data-modal-toggle="authentication-modal"
-              className="block w-fit mt-2 text-orange-600 hover:text-white border border-gray-300 hover:bg-orange-600 focus:ring-1 focus:outline-none focus:ring-orange-600 font-medium rounded-2xl text-sm px-4 p-1 text-center"
-              type="button"
-              onClick={() => {
-                setModal(true);
-              }}
-            >
-              Tip me
-            </button>
+            <div className="flex flex-auto md:justify-start justify-center">
+              <button
+                data-modal-target="authentication-modal"
+                data-modal-toggle="authentication-modal"
+                className="block w-fit mt-4 md:mt-2 text-orange-600 hover:text-white border border-gray-300 hover:bg-orange-600 focus:ring-1 focus:outline-none focus:ring-orange-600 font-medium rounded-2xl text-sm px-4 p-1 text-center"
+                type="button"
+                onClick={() => {
+                  setModal(true);
+                }}
+              >
+                Tip me
+              </button>
+            </div>
             <div
               id="authentication-modal"
               aria-hidden="true"
