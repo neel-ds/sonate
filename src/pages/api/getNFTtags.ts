@@ -21,7 +21,7 @@ export default async (req: NextApiRequest, res: NextApiResponse) => {
   const api = axios.create({
     baseURL: "https://api.simplehash.com/api/v0/nfts/owners",
     headers: {
-      "x-api-key": process.env.API_KEY as string,
+      "x-api-key": process.env.SIMPLEHASH_API_KEY as string,
     },
   });
   const { address } = req.query;
