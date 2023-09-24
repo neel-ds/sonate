@@ -1,7 +1,7 @@
 import User from "@/components/User";
 import * as Web3 from "@solana/web3.js";
+import { useEffect } from "react";
 import { getProgram, getUserAccountPk } from "@/utils/program";
-import { use } from "react";
 
 interface UserAccount {
   profileImage: string;
@@ -9,7 +9,7 @@ interface UserAccount {
   name: string;
   bio: string;
   email: string;
-  linkedinUrl: string;
+  solarplex: string;
   githubUrl: string;
   twitterUrl: string;
   address: Web3.PublicKey;
@@ -17,8 +17,6 @@ interface UserAccount {
 
 export const getServerSideProps = async (context: any) => {
   const username = context.query.username;
-
-
   const wallet = Web3.Keypair.generate();
   const connection = new Web3.Connection(
     "https://api.devnet.solana.com",
@@ -27,11 +25,15 @@ export const getServerSideProps = async (context: any) => {
 
   try {
     const program = getProgram(connection, wallet);
-    const userData = await program.account.userAccount.fetch(getUserAccountPk(username));
-    const link = `https://${(userData as any).cid}.ipfs.w3s.link/${username}.json`;
+    const userData = await program.account.userAccount.fetch(
+      getUserAccountPk(username)
+    );
+    const link = `https://${
+      (userData as any).cid
+    }.ipfs.w3s.link/${username}.json`;
     const response = await fetch(link);
     const parsedData: UserAccount = await response.json();
-
+    console.log("parsedData", parsedData);
     return {
       props: {
         parsedData,
@@ -44,6 +46,10 @@ export const getServerSideProps = async (context: any) => {
   }
 };
 
-export default function Profile({ userData }: { userData: UserAccount }) {
-  return <User parsedData={userData} />;
+export default function Profile({ parsedData }: { parsedData: UserAccount }) {
+  useEffect(() => {
+    if (parsedData) console.log("userData", parsedData);
+  }, [parsedData]);
+
+  return <User parsedData={parsedData} />;
 }

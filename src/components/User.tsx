@@ -10,46 +10,17 @@ import { getProgram, getUserAccountPk } from "@/utils/program";
 import { useRouter } from "next/router";
 import { useConnection, useWallet } from "@solana/wallet-adapter-react";
 
-
 interface UserAccount {
   profileImage: string;
   userName: string;
   name: string;
   bio: string;
   email: string;
-  linkedinUrl: string;
+  solarplex: string;
   githubUrl: string;
   twitterUrl: string;
   address: Web3.PublicKey;
 }
-
-export const getServerSideProps = async (context: any) => {
-  const username = context.query.username;
-
-  const wallet = Web3.Keypair.generate();
-  const connection = new Web3.Connection(
-    "https://api.devnet.solana.com",
-    "confirmed"
-  );
-
-  try {
-    const program = getProgram(connection, wallet);
-    const userData = await program.account.userAccount.fetch(getUserAccountPk(username));
-    const link = `https://${(userData as any).cid}.ipfs.w3s.link/${username}.json`;
-    const response = await fetch(link);
-    const parsedData: UserAccount = await response.json();
-
-    return {
-      props: {
-        parsedData,
-      },
-    };
-  } catch (error) {
-    return {
-      notFound: true,
-    };
-  }
-};
 
 const Card = () => {
   return (
@@ -71,27 +42,32 @@ const Card = () => {
   );
 };
 
-export default function User({ parsedData }: {  parsedData: UserAccount  }) {
+export default function User({ parsedData }: { parsedData: UserAccount }) {
   const router = useRouter();
   const { username } = router.query;
   const [name, setName] = useState("");
   const [bio, setBio] = useState("");
   const [icon, setIcon] = useState("");
-  const [linkedinUrl, setLinkedinUrl] = useState("");
+  const [solarplex, setSolarPlex] = useState("");
   const [githubUrl, setGithubUrl] = useState("");
-  const [twitterUrl, setTwitterUrl] = useState("");
-
   const [avatar, setAvatar] = useState("");
   const [twitter, setTwitter] = useState("");
   const [email, setEmail] = useState("");
   const [modal, setModal] = useState(false);
   const [creatorsAddress, setCreatorsAddress] = useState<
-  Web3.PublicKey | undefined
->(undefined);
-  const tags = ["superteam member", "chad dev", "airdrop hunter"];
+    Web3.PublicKey | undefined
+  >(undefined);
 
+  const [tags, setTags] = useState<string[]>(["superteam member", "madlads", "nft degen"]);
 
-
+  const getTags = async () => {
+    const data = await fetch(`/api/getNFTtags?address=${parsedData.address}`, {
+      method: "GET",
+    });
+    const tag = await data.json();
+    console.log("tag", tag);
+    // setTags(tag);
+  };
 
   useEffect(() => {
     console.log(parsedData);
@@ -100,13 +76,15 @@ export default function User({ parsedData }: {  parsedData: UserAccount  }) {
       setName(parsedData.name);
       setBio(parsedData.bio);
       setEmail(parsedData.email);
-      setLinkedinUrl(`https://${parsedData.linkedinUrl}`);
-      setTwitterUrl(`https://${parsedData.twitterUrl}`);
+      setSolarPlex(`https://${parsedData.solarplex}`);
+      setTwitter(`https://${parsedData.twitterUrl}`);
       setGithubUrl(`https://${parsedData.githubUrl}`);
       setCreatorsAddress(parsedData.address);
+      getTags();
     } catch (error) {
       console.error(error);
     }
+    console.log("parsedData", parsedData);
   }, [parsedData]);
 
   const [txSig, setTxSig] = useState("");
@@ -138,12 +116,8 @@ export default function User({ parsedData }: {  parsedData: UserAccount  }) {
     transaction.lastValidBlockHeight = latestBlockhash.lastValidBlockHeight;
     transaction.recentBlockhash = latestBlockhash.blockhash;
 
-    sendTransaction(transaction, connection).then((sig) => {
-     
-    });
+    sendTransaction(transaction, connection).then((sig) => {});
   };
-
-
 
   return (
     <>
@@ -158,7 +132,8 @@ export default function User({ parsedData }: {  parsedData: UserAccount  }) {
         <div className="flex flex-col sm:flex-row items-center p-8 pt-20 px-2 justify-center bg-[#fefefe] sm:space-x-10 rounded border-t-[1px] border-gray-300">
           <Image
             // loader={() => avatar}
-            src={"/pfp_1.png"}
+            src={icon}
+            loader={() => icon}
             width="250"
             height="250"
             alt="sonate"
@@ -166,9 +141,7 @@ export default function User({ parsedData }: {  parsedData: UserAccount  }) {
           />
           <span className="flex flex-col text-center sm:text-left text-2xl font-semibold whitespace-nowrap">
             <p className="font-bold text-5xl mb-1">{name}</p>
-            <p className="text-gray-700 font-medium text-xl mb-4">
-              {bio}
-            </p>
+            <p className="text-gray-700 font-medium text-xl mb-4">{bio}</p>
             <div className="flex flex-row justify-center sm:justify-start space-x-2">
               <Link
                 href={"https://twitter.com/" + twitter}
