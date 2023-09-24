@@ -1,7 +1,17 @@
+import dynamic from "next/dynamic";
 import Image from "next/image"
 import Link from "next/link"
 
 export default function Header() {
+
+  require("@solana/wallet-adapter-react-ui/styles.css");
+
+  const WalletMultiButtonDynamic = dynamic(
+      async () =>
+          (await import("@solana/wallet-adapter-react-ui")).WalletMultiButton,
+      { ssr: false }
+  );
+
   return (
     <nav className="absolute justify-between w-[100%] py-6 mb-12 md:mb-20 bg-transparent z-50">
         <div className="container px-4 mx-auto">
@@ -32,15 +42,7 @@ export default function Header() {
               </li>
             </ul>
             <div className="hidden lg:block ml-auto">
-              <div className="flex items-center">
-                <a
-                  className="relative group inline-block py-3 px-4 text-sm font-semibold text-orange-600 hover:text-white border border-gray-300 rounded-md overflow-hidden transition duration-300"
-                  href="#"
-                >
-                  <div className="absolute top-0 right-full w-full h-full bg-orange-600 transform group-hover:translate-x-full group-hover:scale-102 transition duration-500"></div>
-                  <span className="relative">Connect Wallet</span>
-                </a>
-              </div>
+              <WalletMultiButtonDynamic />
             </div>
           </div>
         </div>
