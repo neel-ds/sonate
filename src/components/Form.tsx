@@ -1,5 +1,14 @@
 import Image from "next/image";
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import {Web3Storage} from "web3.storage";
+import router, { useRouter } from "next/router";
+import { useAnchorWallet, useConnection } from "@solana/wallet-adapter-react";
+import { PublicKey } from "@solana/web3.js";
+import {
+  Program,
+} from "@project-serum/anchor";
+import { getProgram, getUserAccountPk } from "../utils/program";
+
 
 export default function Form() {
   const [image, setImage] = useState("");
@@ -10,6 +19,71 @@ export default function Form() {
   const [email, setEmail] = useState("");
   const [cubikUrl, setCubikUrl] = useState("");
   const [twitterUrl, setTwitterUrl] = useState("");
+  const [linkedinUrl, setLinkedinUrl] = useState("");
+  const [githubUrl, setGithubUrl] = useState("");
+  const [program, setProgram] = useState<Program | undefined>();
+  const [userPDA, setUserPDA] = useState<PublicKey | undefined>(undefined);
+
+  const uploadImage = (e: React.ChangeEvent<HTMLInputElement>) => {
+    e.preventDefault();
+    const files = (e.target as HTMLInputElement).files!;
+    if (process.env.ACCESS_TOKEN != null) {
+      const client = new Web3Storage({ token: process.env.ACCESS_TOKEN });
+      client.put(files).then((cid:String) => {
+        console.log(cid);
+        setIcon(`https://${cid}.ipfs.w3s.link/${files[0].name}`);
+        console.log(`https://${cid}.ipfs.w3s.link/${files[0].name}`)
+      });
+    } else {
+      console.log("No access token");
+    }
+  };
+
+  const send = async () => {
+    const profile = {
+      profileImage: icon,
+      userName: userName,
+      name: name,
+      bio: bio,
+      email: email,
+      linkedinUrl: linkedinUrl,
+      twitterUrl: twitterUrl,
+      githubUrl: githubUrl,
+      address: wallet?.publicKey
+    };
+
+
+
+    if (process.env.ACCESS_TOKEN != null) {
+      const client = new Web3Storage({ token: process.env.ACCESS_TOKEN });
+      client
+        .put([new File([JSON.stringify(profile)], `${userName}.json`)])
+        .then(async (cid: string) => {
+          const transaction = await (program as any).methods
+            .createUser(userName, cid)
+            .accounts({
+              userAccount: userPDA,
+              authority: wallet!.publicKey,
+            })
+            .rpc();
+          connection.confirmTransaction(transaction).then(() => {
+          
+          });
+          router.push(`/${userName}`)
+        });
+    } else {
+      console.log("No access token");
+    }
+  };
+
+  const { connection } = useConnection();
+  const wallet = useAnchorWallet();
+
+  useEffect(() => {
+    if (wallet) {
+      setProgram(getProgram(connection, wallet));
+    }
+  }, [wallet]);
   return (
     <section className="py-10 bg-gray-900 sm:py-16 lg:py-24">
       <div className="px-4 mx-auto sm:px-6 lg:px-8 max-w-7xl">
@@ -45,9 +119,9 @@ export default function Form() {
                         name="image"
                         type="file"
                         accept={"image/*"}
-                        onChange={(e) => {
-                          // setImage(URL.createObjectURL(e.target.files[0]));
-                        }}
+                        onChange={(
+                          e: React.ChangeEvent<HTMLInputElement>
+                        ) => uploadImage(e)}
                         required
                       ></input>
                     </div>
@@ -173,7 +247,9 @@ export default function Form() {
                   <div className="sm:col-span-2">
                     <button
                       type="submit"
-                      onClick={() => {}}
+                      onClick={() => {
+                        send();
+                      }}
                       className="inline-flex items-center justify-center w-full px-4 py-4 mt-2 text-base font-semibold text-white transition-all duration-200 bg-orange-600 border border-transparent rounded-md focus:outline-none hover:bg-orange-700 focus:bg-orange-700"
                     >
                       Create
