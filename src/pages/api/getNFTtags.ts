@@ -43,7 +43,8 @@ export default async (req: NextApiRequest, res: NextApiResponse) => {
       wallet_addresses: address,
       contract_addresses:"J1S9H3QjnRtBbbuD4HjPV6RpRhwuk4zKbxsnCHuTgh9w"
     },
-  });
+  }
+  );
 
   const { data: superTeam } = await api.get("", {
     params: {
@@ -63,21 +64,15 @@ export default async (req: NextApiRequest, res: NextApiResponse) => {
     return solFloorPrice && solFloorPrice.value > 100000000;
   });
 
-  if (filteredNFTs.length === 0) {
-    return res.status(404).json({ message: "No NFTs found" });
-  } else {
 
     if (filteredNFTs.length > 1) {
-
       tags.push("NFTdegen");
-    } if (madLads) {
+    } if (madLads.nfts.length > 1) {
       tags.push("MadLads");
-
-    } if (superTeam) {
+    } if (superTeam.nfts.length > 1) {
       tags.push("SuperTeam");
-
     }
     
     return res.status(200).json(tags);
-  }
+  
 };
