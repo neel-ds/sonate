@@ -60,7 +60,6 @@ export default function User({ parsedData }: { parsedData: UserAccount }) {
   const [icon, setIcon] = useState("");
   const [solarplex, setSolarPlex] = useState("");
   const [githubUrl, setGithubUrl] = useState("");
-  const [avatar, setAvatar] = useState("");
   const [twitter, setTwitter] = useState("");
   const [email, setEmail] = useState("");
   const [modal, setModal] = useState(false);
@@ -112,9 +111,9 @@ export default function User({ parsedData }: { parsedData: UserAccount }) {
       setName(parsedData.name);
       setBio(parsedData.bio);
       setEmail(parsedData.email);
-      setSolarPlex(`https://${parsedData.solarplex}`);
-      setTwitter(`https://${parsedData.twitterUrl}`);
-      setGithubUrl(`https://${parsedData.githubUrl}`);
+      setSolarPlex(parsedData.solarplex);
+      setTwitter(parsedData.twitterUrl);
+      setGithubUrl(parsedData.githubUrl);
       setCreatorsAddress(parsedData.address);
       getTags();
       getTopNFTs();
@@ -176,11 +175,11 @@ export default function User({ parsedData }: { parsedData: UserAccount }) {
             width="250"
             height="250"
             alt="sonate"
-            className="flex sm:mr-3 justify-center mb-5 sm:mb-0 rounded-full"
+            className="w-60 h-60 object-cover sm:mr-3 justify-center mb-5 sm:mb-0 rounded-full"
           />
           <span className="flex flex-col text-center sm:text-left text-2xl font-semibold whitespace-nowrap">
             <p className="font-bold text-5xl mb-1">{name}</p>
-            <p className="text-gray-700 font-medium text-xl mb-4">{bio}</p>
+            <p className="text-gray-600 font-medium text-2xl mb-4">{bio}</p>
             <div className="flex flex-row justify-center sm:justify-start space-x-2">
               <Link
                 href={"https://twitter.com/" + twitter}
@@ -195,7 +194,7 @@ export default function User({ parsedData }: { parsedData: UserAccount }) {
                 <FiMail size={20} />
               </Link>
               <Link
-                href={"mailto:" + email}
+                href={"https://www.solarplex.xyz/" + solarplex}
                 className="w-fit text-sm border border-gray-700 rounded-full hover:bg-orange-600 hover:border-orange-600 hover:text-white"
               >
                 <Image
@@ -226,7 +225,7 @@ export default function User({ parsedData }: { parsedData: UserAccount }) {
                   setModal(true);
                 }}
               >
-                Tip me
+                Give thanks
               </button>
             </div>
             <div
