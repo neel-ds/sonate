@@ -1,7 +1,7 @@
 import Head from "next/head";
 import Image from "next/image";
 import Link from "next/link";
-import { useEffect, useState } from "react";
+import { FC, useEffect, useState } from "react";
 import { BsTwitter } from "react-icons/bs";
 import { FiMail } from "react-icons/fi";
 import Header from "./Header";
@@ -22,7 +22,13 @@ interface UserAccount {
   address: Web3.PublicKey;
 }
 
-const Card = () => {
+interface NFTCard {
+  image: string;
+  name: string;
+  url: string;
+}
+
+const Card: FC<NFTCard> = ({ image, name, url }) => {
   return (
     <Link
       className="w-full md:w-[22%] mb-5 p-2 bg-white border border-gray-100 rounded-xl shadow-lg flex flex-col"
@@ -31,12 +37,16 @@ const Card = () => {
       <div className="flex flex-col items-center mt-2 space-y-2">
         <Image
           className="rounded-xl shadow-lg"
-          src={"/madlads.png"}
+          src={image}
+          loader={({ src }) => src}
           width={250}
           height={250}
           alt="nft"
+          onClick={() => {
+            window.open(url, "_blank");
+          }}
         />
-        <p className="text-lg font-medium">Fock It.</p>
+        <p className="text-lg font-medium">{name}</p>
       </div>
     </Link>
   );
@@ -57,27 +67,42 @@ export default function User({ parsedData }: { parsedData: UserAccount }) {
   const [creatorsAddress, setCreatorsAddress] = useState<
     Web3.PublicKey | undefined
   >(undefined);
+  const [nftsData, setNftsData] = useState<NFTCard[]>([]);
 
-  const [tags, setTags] = useState<string[]>([
-    "superteam member",
-    "madlads",
-    "nft degen",
-  ]);
+  const [tags, setTags] = useState<string[]>([]);
 
   const getTags = async () => {
-    const data = await fetch(`/api/getNFTtags?address=${parsedData.address}`, {
-      method: "GET",
-    });
+    const data = await fetch(
+      `/api/getNFTtags?address=EBefTt9xXvoixAousPZSkYm78j71yKRWfrXwy7duw84L`,
+      {
+        method: "GET",
+      }
+    );
     const tag = await data.json();
-    console.log("tag", tag);
+    const tagsList: string[] = [];
+    tag.map((t: string) => {
+      tagsList.push(t);
+    });
+    setTags(tagsList);
   };
 
   const getTopNFTs = async () => {
-    const data = await fetch(`/api/getTopNFTs?address=${parsedData.address}`, {
-      method: "GET",
+    const data = await fetch(
+      `/api/getTopNFTs?address=EBefTt9xXvoixAousPZSkYm78j71yKRWfrXwy7duw84L`,
+      {
+        method: "GET",
+      }
+    );
+    const nfts = await data.json();
+    const nftsList: NFTCard[] = [];
+    nfts.map((nft: any) => {
+      nftsList.push({
+        image: nft.previews.image_medium_url,
+        name: nft.name,
+        url: nft.collection.marketplace_pages[0].collection_url,
+      });
     });
-    const tag = await data.json();
-    console.log("nfts", tag);
+    setNftsData(nftsList);
   };
 
   useEffect(() => {
@@ -282,7 +307,9 @@ export default function User({ parsedData }: { parsedData: UserAccount }) {
             Your top collection
           </p>
           <div className="flex flex-row flex-wrap items-center justify-between bg-[#F8F7FF]">
-            <Card />
+            {nftsData.map((nft: NFTCard) => (
+              <Card image={nft.image} name={nft.name} url={nft.url} />
+            ))}
           </div>
         </div>
       </main>
