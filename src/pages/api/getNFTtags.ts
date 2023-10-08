@@ -3,6 +3,7 @@ import { NextApiRequest, NextApiResponse } from "next";
 
 interface Nft {
   nft_id: string;
+  description: string;
   collection: {
     floor_prices: {
       value: number;
@@ -35,25 +36,21 @@ export default async (req: NextApiRequest, res: NextApiResponse) => {
     },
   });
 
-
-
-    const { data: madLads } = await api.get("", {
+  const { data: madLads } = await api.get("", {
     params: {
       chains: "solana",
       wallet_addresses: address,
-      contract_addresses:"J1S9H3QjnRtBbbuD4HjPV6RpRhwuk4zKbxsnCHuTgh9w"
+      contract_addresses: "J1S9H3QjnRtBbbuD4HjPV6RpRhwuk4zKbxsnCHuTgh9w",
     },
-  }
-  );
+  });
 
   const { data: superTeam } = await api.get("", {
     params: {
       chains: "solana",
       wallet_addresses: address,
-      contract_addresses:"2xpiTxRjSBGkz3kKxxXL5XJU3i1gkNiuAWALJETGwuRw"
+      contract_addresses: "2xpiTxRjSBGkz3kKxxXL5XJU3i1gkNiuAWALJETGwuRw",
     },
   });
-
 
   const formattedNfts = nfts as NftResponse;
 
@@ -64,15 +61,18 @@ export default async (req: NextApiRequest, res: NextApiResponse) => {
     return solFloorPrice && solFloorPrice.value > 100000000;
   });
 
+  if (filteredNFTs.length > 1) {
+    const mad = filteredNFTs.filter((nft) => {
+      if (nft.description == "Fock it.") {
+        tags.push("MadLads");
+      }
+    });
 
-    if (filteredNFTs.length > 1) {
-      tags.push("NFTdegen");
-    } if (madLads.nfts.length > 1) {
-      tags.push("MadLads");
-    } if (superTeam.nfts.length > 1) {
-      tags.push("SuperTeam");
-    }
-    
-    return res.status(200).json(tags);
-  
+    tags.push("NFTdegen");
+  }
+  if (superTeam.nfts.length > 0) {
+    tags.push("SuperTeam");
+  }
+
+  return res.status(200).json(tags);
 };

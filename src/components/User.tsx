@@ -171,7 +171,6 @@ export default function User({ parsedData }: { parsedData: UserAccount }) {
         <Header />
         <div className="flex flex-col sm:flex-row items-center p-8 pt-20 px-2 justify-center bg-[#fefefe] sm:space-x-10 rounded border-t-[1px] border-gray-300">
           <Image
-            // loader={() => avatar}
             src={icon}
             loader={() => icon}
             width="250"
@@ -307,8 +306,8 @@ export default function User({ parsedData }: { parsedData: UserAccount }) {
             Your top collection
           </p>
           <div className="flex flex-row flex-wrap items-center justify-between bg-[#F8F7FF]">
-            {nftsData.map((nft: NFTCard) => (
-              <Card image={nft.image} name={nft.name} url={nft.url} />
+            {nftsData.map((nft: NFTCard, i) => (
+              <Card key={i} image={nft.image} name={nft.name} url={nft.url} />
             ))}
           </div>
         </div>
