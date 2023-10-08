@@ -6,7 +6,6 @@ import { BsTwitter } from "react-icons/bs";
 import { FiMail } from "react-icons/fi";
 import Header from "./Header";
 import * as Web3 from "@solana/web3.js";
-import { getProgram, getUserAccountPk } from "@/utils/program";
 import { useRouter } from "next/router";
 import { useConnection, useWallet } from "@solana/wallet-adapter-react";
 
@@ -36,7 +35,7 @@ const Card: FC<NFTCard> = ({ image, name, url }) => {
     >
       <div className="flex flex-col items-center mt-2 space-y-2">
         <Image
-          className="rounded-xl shadow-lg"
+          className="w-64 h-60 object-contain rounded-xl shadow-lg"
           src={image}
           loader={({ src }) => src}
           width={250}
@@ -46,7 +45,7 @@ const Card: FC<NFTCard> = ({ image, name, url }) => {
             window.open(url, "_blank");
           }}
         />
-        <p className="text-lg font-medium">{name}</p>
+        <p className="text-lg text-slate-900 font-regular">{name}</p>
       </div>
     </Link>
   );
@@ -205,7 +204,7 @@ export default function User({ parsedData }: { parsedData: UserAccount }) {
                 />
               </Link>
             </div>
-            <div className="flex flex-col md:flex-row items-center justify-center mt-2 space-y-1 md:space-x-1">
+            <div className="flex flex-col md:flex-row items-center mt-2 space-y-1 md:space-y-0 md:space-x-1 ">
               {tags.map((tag: string, index: any) => (
                 <p
                   key={index}
@@ -239,7 +238,7 @@ export default function User({ parsedData }: { parsedData: UserAccount }) {
                 <div className="relative rounded-lg shadow bg-gray-900">
                   <button
                     type="button"
-                    className="absolute top-3 right-2.5 text-gray-400 bg-transparent hover:bg-gray-200 hover:text-gray-900 rounded-lg text-sm w-8 h-8 ml-auto inline-flex justify-center items-center dark:hover:bg-gray-600 dark:hover:text-white"
+                    className="absolute top-3 right-2.5 text-gray-400 bg-transparent hover:bg-gray-200 hover:text-gray-900 rounded-lg text-sm w-8 h-8 ml-auto inline-flex justify-center items-center"
                     data-modal-hide="authentication-modal"
                     onClick={() => {
                       setModal(false);
@@ -263,12 +262,12 @@ export default function User({ parsedData }: { parsedData: UserAccount }) {
                     <span className="sr-only">Close modal</span>
                   </button>
                   <div className="px-6 py-6 lg:px-8">
-                    <h3 className="mb-4 text-xl font-medium text-gray-900 dark:text-white">
+                    <h3 className="mb-4 text-xl font-medium text-white">
                       Reward your chad
                     </h3>
                     <form className="space-y-6" action="#">
                       <div>
-                        <label className="block mb-2 text-sm font-medium text-gray-900 dark:text-white">
+                        <label className="block mb-2 text-sm font-normal text-gray-300">
                           Number which can make em happy
                         </label>
                         <input
@@ -278,7 +277,7 @@ export default function User({ parsedData }: { parsedData: UserAccount }) {
                           type="number"
                           name="amount"
                           id="amount"
-                          className="bg-gray-50 border border-orange-600 text-gray-900 text-sm rounded-lg focus:ring-orange-600 focus:border-orange-600 block w-full p-2.5"
+                          className="bg-gray-50 border border-slate-400 text-gray-900 text-sm rounded-lg focus:ring-orange-600 focus:border-orange-600 block w-full p-2.5"
                           placeholder="4 SOL"
                           required
                         />
@@ -301,9 +300,10 @@ export default function User({ parsedData }: { parsedData: UserAccount }) {
           </span>
         </div>
         <div className="p-5 md:p-10 space-y-2">
-          <p className="text-xl font-semibold text-center md:text-start">
+          <p className="text-2xl font-medium text-center md:text-start">
             Your top collection
           </p>
+          <hr className="my-12 h-[0.5px] border-t-0 bg-gray-300 opacity-90" />
           <div className="flex flex-row flex-wrap items-center justify-between bg-[#F8F7FF]">
             {nftsData.map((nft: NFTCard, i) => (
               <Card key={i} image={nft.image} name={nft.name} url={nft.url} />
