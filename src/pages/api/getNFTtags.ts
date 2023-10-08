@@ -5,6 +5,7 @@ interface Nft {
   nft_id: string;
   description: string;
   collection: {
+    collection_id: string;
     floor_prices: {
       value: number;
       payment_token: {
@@ -12,6 +13,16 @@ interface Nft {
       };
     }[];
   };
+}
+
+interface ShyftNft {
+  result: {
+    nfts: {
+      collection: {
+        address: string;
+      }
+    }[];
+  }
 }
 
 interface NftResponse {
@@ -26,6 +37,14 @@ export default async (req: NextApiRequest, res: NextApiResponse) => {
     },
   });
   const { address } = req.query;
+  const shyftAPI = axios.create({
+    baseURL: `https://api.shyft.to/sol/v2/nft/read_all?network=mainnet-beta&address=${address}`,
+    headers: {
+      "x-api-key": process.env.SHYFT_API_KEY as string,
+    },
+  });
+
+
 
   let tags = [];
 
@@ -36,21 +55,9 @@ export default async (req: NextApiRequest, res: NextApiResponse) => {
     },
   });
 
-  const { data: madLads } = await api.get("", {
-    params: {
-      chains: "solana",
-      wallet_addresses: address,
-      contract_addresses: "J1S9H3QjnRtBbbuD4HjPV6RpRhwuk4zKbxsnCHuTgh9w",
-    },
-  });
+  const { data: s } = await shyftAPI.get("");
 
-  const { data: superTeam } = await api.get("", {
-    params: {
-      chains: "solana",
-      wallet_addresses: address,
-      contract_addresses: "2xpiTxRjSBGkz3kKxxXL5XJU3i1gkNiuAWALJETGwuRw",
-    },
-  });
+  const shyftNfts = s as ShyftNft;
 
   const formattedNfts = nfts as NftResponse;
 
@@ -58,21 +65,25 @@ export default async (req: NextApiRequest, res: NextApiResponse) => {
     const solFloorPrice = nft.collection.floor_prices.find(
       (price) => price.payment_token.symbol === "SOL"
     );
-    return solFloorPrice && solFloorPrice.value > 100000000;
+    return solFloorPrice;
   });
 
+
   if (filteredNFTs.length > 1) {
-    const mad = filteredNFTs.filter((nft) => {
-      if (nft.description == "Fock it.") {
+    tags.push("NFTdegen");
+  }
+
+  if (shyftNfts) {
+    const filterNFT = shyftNfts.result.nfts.filter((nft: any) => {
+      if (nft.collection.address === "E4ToMjm8YtRyfPUhZ7hxRMxe4J8FnSr9CcprytZBYFua") {
+        tags.push("SuperTeam");
+      }
+      if (nft.collection.address === "J1S9H3QjnRtBbbuD4HjPV6RpRhwuk4zKbxsnCHuTgh9w") {
         tags.push("MadLads");
       }
     });
+  }
 
-    tags.push("NFTdegen");
-  }
-  if (superTeam.nfts.length > 0) {
-    tags.push("SuperTeam");
-  }
 
   return res.status(200).json(tags);
 };
