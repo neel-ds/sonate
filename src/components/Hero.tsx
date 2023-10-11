@@ -1,20 +1,20 @@
 import dynamic from "next/dynamic";
 import Image from "next/image";
-import Link from "next/link"
+import Link from "next/link";
 import { useRouter } from "next/router";
 
 export default function Hero() {
   require("@solana/wallet-adapter-react-ui/styles.css");
 
   const WalletMultiButtonDynamic = dynamic(
-      async () =>
-          (await import("@solana/wallet-adapter-react-ui")).WalletMultiButton,
-      { ssr: false }
+    async () =>
+      (await import("@solana/wallet-adapter-react-ui")).WalletMultiButton,
+    { ssr: false }
   );
 
   const router = useRouter();
   return (
-    <div className="relative pb-12 overflow-hidden">
+    <div className="relative h-[100vh] pb-12 overflow-hidden">
       <Image
         className="hidden lg:block absolute top-0 left-0 w-32 md:w-auto z-10"
         src="https://shuffle.dev/saturn-assets/images/headers/star-header-dark.png"
