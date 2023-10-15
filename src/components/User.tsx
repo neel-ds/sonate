@@ -69,9 +69,9 @@ export default function User({ parsedData }: { parsedData: UserAccount }) {
 
   const [tags, setTags] = useState<string[]>([]);
 
-  const getTags = async () => {
+  const getTags = async (address:any) => {
     const data = await fetch(
-      `/api/getNFTtags?address=EBefTt9xXvoixAousPZSkYm78j71yKRWfrXwy7duw84L`,
+      `/api/getNFTtags?address=${address}`,
       {
         method: "GET",
       }
@@ -84,15 +84,16 @@ export default function User({ parsedData }: { parsedData: UserAccount }) {
     setTags(tagsList);
   };
 
-  const getTopNFTs = async () => {
+  const getTopNFTs = async (address:any) => {
     const data = await fetch(
-      `/api/getTopNFTs?address=EBefTt9xXvoixAousPZSkYm78j71yKRWfrXwy7duw84L`,
+      `/api/getTopNFTs?address=${address}`,
       {
         method: "GET",
       }
     );
     const nfts = await data.json();
     const nftsList: NFTCard[] = [];
+  if (nfts.length > 0) {
     nfts.map((nft: any) => {
       nftsList.push({
         image: nft.previews.image_medium_url,
@@ -100,11 +101,12 @@ export default function User({ parsedData }: { parsedData: UserAccount }) {
         url: nft.collection.marketplace_pages[0].collection_url,
       });
     });
+  }
     setNftsData(nftsList);
   };
 
   useEffect(() => {
-    console.log(parsedData);
+    console.log(parsedData.address);
     try {
       setIcon(parsedData.profileImage);
       setName(parsedData.name);
@@ -114,13 +116,15 @@ export default function User({ parsedData }: { parsedData: UserAccount }) {
       setTwitter(parsedData.twitterUrl);
       setGithubUrl(parsedData.githubUrl);
       setCreatorsAddress(parsedData.address);
-      getTags();
-      getTopNFTs();
+      getTags(parsedData.address);
+      getTopNFTs(parsedData.address);
     } catch (error) {
       console.error(error);
     }
-    console.log("parsedData", parsedData);
+    console.log("parsedData", creatorsAddress);
   }, [parsedData]);
+
+  
 
   const [txSig, setTxSig] = useState("");
   const { connection } = useConnection();
