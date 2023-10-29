@@ -1,4 +1,4 @@
-import User from "@/components/User";
+import User from "@/views/User";
 import * as Web3 from "@solana/web3.js";
 import { useEffect } from "react";
 import { getProgram, getUserAccountPk } from "@/utils/program";

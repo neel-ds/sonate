@@ -4,7 +4,7 @@ import Link from "next/link";
 import { FC, useEffect, useState } from "react";
 import { BsTwitter } from "react-icons/bs";
 import { FiMail } from "react-icons/fi";
-import Header from "./Header";
+import Header from "../components/Header";
 import * as Web3 from "@solana/web3.js";
 import { useRouter } from "next/router";
 import { useConnection, useWallet } from "@solana/wallet-adapter-react";

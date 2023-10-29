@@ -14,7 +14,7 @@ export default function Hero() {
 
   const router = useRouter();
   return (
-    <div className="relative h-[100vh] pb-12 overflow-hidden">
+    <div className="relative lg:h-[100vh] pb-12 overflow-hidden">
       <Image
         className="hidden lg:block absolute top-0 left-0 w-32 md:w-auto z-10"
         src="https://shuffle.dev/saturn-assets/images/headers/star-header-dark.png"
